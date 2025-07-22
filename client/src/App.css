@@ -1,0 +1,52 @@
+.container{
+    padding: 10px;
+}
+.form-container{
+    background-color: rgb(118, 152, 207);
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.input-container{
+    display: flex;
+    gap: 5px;
+}
+.input-container input{
+    width: 10rem;
+    height: 4vh;
+    padding: 4px;
+    color: black;
+    border-radius: 5px;
+}
+.input-container button{
+    width: 5rem;
+    height: 4vh;
+    padding: 4px;
+    color: black;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.card-container{
+    width: 20rem;
+    height: 20vh;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: space-around;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    padding: 4px;
+    position: relative;
+}
+.card-btn{
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    display: flex;
+    gap: 5px;
+}
+.card-btn button{
+    cursor: pointer;
+}
