@@ -13,7 +13,8 @@ const addTask = async (req,res) => {
     } catch (error) {
         res.status(500).json({message: error.message})
     }
-}
+    }
+
 
 // API TO SHOW TASK
  
@@ -31,7 +32,7 @@ const showTask = async (req,res)=> {
 const updateTask = async (req,res) => {
     try {
         const {id} = req.params
-        const updatedTask = await Task.findByIdAndUpdate(id, req.body, {new:true})
+        const updatedTask = await Task.findByIdAndUpdate(id, req.body, {new:true, runValidators: true,})
         res.status(200).json(updatedTask)
     } catch (error) {
         res.status(500).json({message:error.message})

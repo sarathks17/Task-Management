@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
+
 const App = () => {
   const [tasks, setTasks] = useState([]);
   const [popup, setpopup] = useState(false);
+  const [editTaskId, setEditTaskId] = useState(null); // Track if updating
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -11,6 +14,7 @@ const App = () => {
     status: "",
   });
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -19,68 +23,68 @@ const App = () => {
     });
   };
 
+  // Submit form for add or update
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/task",
-        formData
-      );
-      alert("Data send Successfully");
+      if (editTaskId) {
+        // UPDATE
+        const response = await axios.put(
+          `http://localhost:3001/api/task/${editTaskId}`,
+          formData
+        );
+        console.log("Updated task:", response.data);
+        alert("Task updated successfully");
+      } else {
+        // CREATE
+        const response = await axios.post(
+          "http://localhost:3001/api/task",
+          formData
+        );
+        console.log("Created task:", response.data);
+        alert("Task created successfully");
+      }
+
+      setFormData({ title: "", description: "", due_date: "", status: "" });
+      setpopup(false);
+      setEditTaskId(null);
+      getAllTask(); // Refresh
+
     } catch (error) {
-      console.log("Error sending data", error);
+      console.log("Error:", error);
     }
   };
 
+  // Fetch all tasks
   const getAllTask = async () => {
     try {
       const response = await axios.get("http://localhost:3001/api/task");
-      console.log("response", response.data);
       setTasks(response.data);
-      console.log("Successfully fetched");
     } catch (error) {
-      console.log("Error occure while fetching data", error);
+      console.log("Error while fetching tasks", error);
     }
   };
 
-  const updateTask = async (id, updatedData) => {
+  // Delete task
+  const handleDeleteTask = async (id) => {
     try {
-      const response = await axios.put(
-        `http://localhost:3001/api/task/${id}`,
-        updatedData
-      );
-      console.log("Task updated", response.data);
-      return response.data;
+      const response = await axios.delete(`http://localhost:3001/api/task/${id}`);
+      alert("Task Deleted Successfully");
+      getAllTask(); // Refresh
     } catch (error) {
-      console.error(
-        "Error updating task",
-        error.response?.data || error.message
-      );
-      throw error;
-    }
-  };
-
-  const handleUpdate = async (taskId) => {
-    const updatedData = {
-      title: "Updated Title",
-      description: "Updated description",
-      due_date: "2025-07-31",
-      status: "in-progress",
-    };
-
-    try {
-      const updatedTask = await updateTask(taskId, updatedData);
-    } catch (err) {
-      alert("Failed to update task.");
+      console.error("Error deleting task:", error.response?.data || error.message);
     }
   };
 
   useEffect(() => {
     getAllTask();
   }, []);
+
   return (
     <div className="container">
-      {popup ? (
+      {/* Popup Form */}
+      {popup && (
         <div className="blur-overlay">
           <div className="popus">
             <form onSubmit={handleSubmit}>
@@ -103,7 +107,6 @@ const App = () => {
                 />
                 <input
                   type="date"
-                  placeholder="Due_Date"
                   name="due_date"
                   value={formData.due_date}
                   onChange={handleChange}
@@ -113,23 +116,34 @@ const App = () => {
                   value={formData.status}
                   name="status"
                   onChange={handleChange}
+                  required
                 >
-                  <option value="">Pending</option>
-                  <option value="">In-Progress</option>
-                  <option value="">Completed</option>
+                  <option value="">Select Status</option>
+                  <option value="Pending">Pending</option>
+                  <option value="in-Progress">in-Progress</option>
+                  <option value="Completed">Completed</option>
                 </select>
+
                 <div className="popup-btn">
-                  <button onClick={() => setpopup((prev) => !prev)}>Back</button>
-                  <button type="submit">update Task</button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setpopup(false);
+                      setFormData({ title: "", description: "", due_date: "", status: "" });
+                      setEditTaskId(null);
+                    }}
+                  >
+                    Back
+                  </button>
+                  <button type="submit">{editTaskId ? "Update Task" : "Add Task"}</button>
                 </div>
               </div>
             </form>
           </div>
         </div>
-      ) : (
-        ""
       )}
 
+      {/* Add Task Form */}
       <div className="form-container">
         <form onSubmit={handleSubmit}>
           <div className="input-container">
@@ -151,7 +165,6 @@ const App = () => {
             />
             <input
               type="date"
-              placeholder="Due_Date"
               name="due_date"
               value={formData.due_date}
               onChange={handleChange}
@@ -161,25 +174,42 @@ const App = () => {
               value={formData.status}
               name="status"
               onChange={handleChange}
+              required
             >
-              <option value="">Pending</option>
-              <option value="">In-Progress</option>
-              <option value="">Completed</option>
+              <option value="">Select Status</option>
+              <option value="Pending">Pending</option>
+              <option value="In-Progress">In-Progress</option>
+              <option value="Completed">Completed</option>
             </select>
             <button type="submit">Add Task</button>
           </div>
         </form>
       </div>
+
+      {/* Tasks Display */}
       <div className="card-section">
         {tasks.map((task, id) => (
           <div key={id} className="card-container">
             <h4>{task.title}</h4>
             <p>{task.description}</p>
-            <h5>{task.due_date}</h5>
+            <h5>{task.due_date?.split("T")[0]}</h5>
             <h4>Status: {task.status}</h4>
             <div className="card-btn">
-              <button onClick={() => setpopup((prev) => !prev)}>Update</button>
-              <button>Delete</button>
+              <button
+                onClick={() => {
+                  setFormData({
+                    title: task.title,
+                    description: task.description,
+                    due_date: task.due_date?.split("T")[0] || "",
+                    status: task.status,
+                  });
+                  setEditTaskId(task._id);
+                  setpopup(true);
+                }}
+              >
+                Update
+              </button>
+              <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
             </div>
           </div>
         ))}

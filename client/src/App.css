@@ -78,8 +78,8 @@
 .card-section{
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-around;
+    align-items: start;
+   gap:10px
 }
 .card-container{
     width: 20rem;
@@ -103,4 +103,34 @@
 }
 .card-btn button{
     cursor: pointer;
+}
+
+@media(max-width:717px){
+    .form-container{
+        height: 30vh;
+    }
+    .form-container select{
+         width: 15rem;
+        height: 5vh;
+    }
+    .form-container button{
+         width: 15rem;
+        height: 5vh;
+    }
+    .form-container input{
+        width: 15rem;
+        height: 5vh;
+    }
+    .input-container{
+        display: flex;
+        flex-direction: column;
+    }
+}
+@media(max-width:671px){
+    .card-section{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
 }
