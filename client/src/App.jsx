@@ -31,7 +31,7 @@ const App = () => {
       if (editTaskId) {
         // UPDATE
         const response = await axios.put(
-          `http://localhost:3001/api/task/${editTaskId}`,
+          `https://task-management-ea1y.onrender.com/${editTaskId}`,
           formData
         );
         console.log("Updated task:", response.data);
@@ -39,7 +39,7 @@ const App = () => {
       } else {
         // CREATE
         const response = await axios.post(
-          "http://localhost:3001/api/task",
+          "https://task-management-ea1y.onrender.com/api/task",
           formData
         );
         console.log("Created task:", response.data);
@@ -59,7 +59,7 @@ const App = () => {
   // Fetch all tasks
   const getAllTask = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/api/task");
+      const response = await axios.get("https://task-management-ea1y.onrender.com/api/task");
       setTasks(response.data);
     } catch (error) {
       console.log("Error while fetching tasks", error);
@@ -69,7 +69,7 @@ const App = () => {
   // Delete task
   const handleDeleteTask = async (id) => {
     try {
-      const response = await axios.delete(`http://localhost:3001/api/task/${id}`);
+      const response = await axios.delete(`https://task-management-ea1y.onrender.com/api/task/${id}`);
       alert("Task Deleted Successfully");
       getAllTask(); // Refresh
     } catch (error) {
